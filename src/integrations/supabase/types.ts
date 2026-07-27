@@ -38,6 +38,36 @@ export type Database = {
         }
         Relationships: []
       }
+      jenis_biaya: {
+        Row: {
+          berulang: boolean
+          created_at: string
+          deskripsi: string | null
+          id: string
+          nama: string
+          nominal_default: number
+          updated_at: string
+        }
+        Insert: {
+          berulang?: boolean
+          created_at?: string
+          deskripsi?: string | null
+          id?: string
+          nama: string
+          nominal_default?: number
+          updated_at?: string
+        }
+        Update: {
+          berulang?: boolean
+          created_at?: string
+          deskripsi?: string | null
+          id?: string
+          nama?: string
+          nominal_default?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       munaqasyah: {
         Row: {
           catatan: string | null
@@ -75,6 +105,53 @@ export type Database = {
             columns: ["santri_id"]
             isOneToOne: false
             referencedRelation: "santri"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pembayaran: {
+        Row: {
+          catatan: string | null
+          created_at: string
+          dicatat_oleh: string | null
+          id: string
+          jumlah: number
+          metode: string
+          no_referensi: string | null
+          tagihan_id: string
+          tanggal: string
+          updated_at: string
+        }
+        Insert: {
+          catatan?: string | null
+          created_at?: string
+          dicatat_oleh?: string | null
+          id?: string
+          jumlah: number
+          metode?: string
+          no_referensi?: string | null
+          tagihan_id: string
+          tanggal?: string
+          updated_at?: string
+        }
+        Update: {
+          catatan?: string | null
+          created_at?: string
+          dicatat_oleh?: string | null
+          id?: string
+          jumlah?: number
+          metode?: string
+          no_referensi?: string | null
+          tagihan_id?: string
+          tanggal?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pembayaran_tagihan_id_fkey"
+            columns: ["tagihan_id"]
+            isOneToOne: false
+            referencedRelation: "tagihan"
             referencedColumns: ["id"]
           },
         ]
@@ -215,6 +292,63 @@ export type Database = {
           },
         ]
       }
+      tagihan: {
+        Row: {
+          created_at: string
+          id: string
+          jatuh_tempo: string | null
+          jenis_biaya_id: string | null
+          judul: string
+          keterangan: string | null
+          nominal: number
+          periode: string | null
+          santri_id: string
+          status: Database["public"]["Enums"]["tagihan_status"]
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          jatuh_tempo?: string | null
+          jenis_biaya_id?: string | null
+          judul: string
+          keterangan?: string | null
+          nominal?: number
+          periode?: string | null
+          santri_id: string
+          status?: Database["public"]["Enums"]["tagihan_status"]
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          jatuh_tempo?: string | null
+          jenis_biaya_id?: string | null
+          judul?: string
+          keterangan?: string | null
+          nominal?: number
+          periode?: string | null
+          santri_id?: string
+          status?: Database["public"]["Enums"]["tagihan_status"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tagihan_jenis_biaya_id_fkey"
+            columns: ["jenis_biaya_id"]
+            isOneToOne: false
+            referencedRelation: "jenis_biaya"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tagihan_santri_id_fkey"
+            columns: ["santri_id"]
+            isOneToOne: false
+            referencedRelation: "santri"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_roles: {
         Row: {
           created_at: string
@@ -286,6 +420,7 @@ export type Database = {
       app_role: "admin" | "ustadz" | "wali" | "santri"
       santri_status: "aktif" | "lulus" | "keluar"
       setoran_kualitas: "lancar" | "perlu_ulang" | "kurang"
+      tagihan_status: "belum_bayar" | "sebagian" | "lunas" | "dibatalkan"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -416,6 +551,7 @@ export const Constants = {
       app_role: ["admin", "ustadz", "wali", "santri"],
       santri_status: ["aktif", "lulus", "keluar"],
       setoran_kualitas: ["lancar", "perlu_ulang", "kurang"],
+      tagihan_status: ["belum_bayar", "sebagian", "lunas", "dibatalkan"],
     },
   },
 } as const
