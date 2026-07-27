@@ -7,6 +7,7 @@ import {
   GraduationCap,
   ClipboardCheck,
   Shield,
+  Wallet,
 } from "lucide-react";
 import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
@@ -34,6 +35,7 @@ const NAV: Record<AppRole, NavItem[]> = {
     { title: "Data Santri", url: "/santri", icon: GraduationCap },
     { title: "Halaqah", url: "/halaqah", icon: BookOpen },
     { title: "Setoran Hafalan", url: "/setoran", icon: ClipboardCheck },
+    { title: "Keuangan & SPP", url: "/keuangan", icon: Wallet },
     { title: "Manajemen Pengguna", url: "/users", icon: Shield },
   ],
   ustadz: [
@@ -45,10 +47,12 @@ const NAV: Record<AppRole, NavItem[]> = {
   wali: [
     { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
     { title: "Progres Anak", url: "/santri", icon: GraduationCap },
+    { title: "Tagihan & SPP", url: "/keuangan", icon: Wallet },
   ],
   santri: [
     { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
     { title: "Progres Saya", url: "/santri", icon: GraduationCap },
+    { title: "Tagihan Saya", url: "/keuangan", icon: Wallet },
   ],
 };
 

@@ -13,6 +13,7 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedSetoranRouteImport } from './routes/_authenticated/setoran'
+import { Route as AuthenticatedKeuanganRouteImport } from './routes/_authenticated/keuangan'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedSantriIndexRouteImport } from './routes/_authenticated/santri.index'
 import { Route as AuthenticatedSantriNewRouteImport } from './routes/_authenticated/santri.new'
@@ -35,6 +36,11 @@ const IndexRoute = IndexRouteImport.update({
 const AuthenticatedSetoranRoute = AuthenticatedSetoranRouteImport.update({
   id: '/setoran',
   path: '/setoran',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedKeuanganRoute = AuthenticatedKeuanganRouteImport.update({
+  id: '/keuangan',
+  path: '/keuangan',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
@@ -63,6 +69,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/keuangan': typeof AuthenticatedKeuanganRoute
   '/setoran': typeof AuthenticatedSetoranRoute
   '/santri/$id': typeof AuthenticatedSantriIdRoute
   '/santri/new': typeof AuthenticatedSantriNewRoute
@@ -72,6 +79,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/keuangan': typeof AuthenticatedKeuanganRoute
   '/setoran': typeof AuthenticatedSetoranRoute
   '/santri/$id': typeof AuthenticatedSantriIdRoute
   '/santri/new': typeof AuthenticatedSantriNewRoute
@@ -83,6 +91,7 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/keuangan': typeof AuthenticatedKeuanganRoute
   '/_authenticated/setoran': typeof AuthenticatedSetoranRoute
   '/_authenticated/santri/$id': typeof AuthenticatedSantriIdRoute
   '/_authenticated/santri/new': typeof AuthenticatedSantriNewRoute
@@ -94,6 +103,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/dashboard'
+    | '/keuangan'
     | '/setoran'
     | '/santri/$id'
     | '/santri/new'
@@ -103,6 +113,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/dashboard'
+    | '/keuangan'
     | '/setoran'
     | '/santri/$id'
     | '/santri/new'
@@ -113,6 +124,7 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/auth'
     | '/_authenticated/dashboard'
+    | '/_authenticated/keuangan'
     | '/_authenticated/setoran'
     | '/_authenticated/santri/$id'
     | '/_authenticated/santri/new'
@@ -155,6 +167,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedSetoranRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/keuangan': {
+      id: '/_authenticated/keuangan'
+      path: '/keuangan'
+      fullPath: '/keuangan'
+      preLoaderRoute: typeof AuthenticatedKeuanganRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/dashboard': {
       id: '/_authenticated/dashboard'
       path: '/dashboard'
@@ -188,6 +207,7 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedKeuanganRoute: typeof AuthenticatedKeuanganRoute
   AuthenticatedSetoranRoute: typeof AuthenticatedSetoranRoute
   AuthenticatedSantriIdRoute: typeof AuthenticatedSantriIdRoute
   AuthenticatedSantriNewRoute: typeof AuthenticatedSantriNewRoute
@@ -196,6 +216,7 @@ interface AuthenticatedRouteRouteChildren {
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedKeuanganRoute: AuthenticatedKeuanganRoute,
   AuthenticatedSetoranRoute: AuthenticatedSetoranRoute,
   AuthenticatedSantriIdRoute: AuthenticatedSantriIdRoute,
   AuthenticatedSantriNewRoute: AuthenticatedSantriNewRoute,
