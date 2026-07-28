@@ -68,6 +68,50 @@ export type Database = {
         }
         Relationships: []
       }
+      kehadiran_pegawai: {
+        Row: {
+          catatan: string | null
+          created_at: string
+          id: string
+          jam_masuk: string | null
+          jam_pulang: string | null
+          pegawai_id: string
+          status: Database["public"]["Enums"]["kehadiran_status"]
+          tanggal: string
+          updated_at: string
+        }
+        Insert: {
+          catatan?: string | null
+          created_at?: string
+          id?: string
+          jam_masuk?: string | null
+          jam_pulang?: string | null
+          pegawai_id: string
+          status?: Database["public"]["Enums"]["kehadiran_status"]
+          tanggal?: string
+          updated_at?: string
+        }
+        Update: {
+          catatan?: string | null
+          created_at?: string
+          id?: string
+          jam_masuk?: string | null
+          jam_pulang?: string | null
+          pegawai_id?: string
+          status?: Database["public"]["Enums"]["kehadiran_status"]
+          tanggal?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "kehadiran_pegawai_pegawai_id_fkey"
+            columns: ["pegawai_id"]
+            isOneToOne: false
+            referencedRelation: "pegawai"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       munaqasyah: {
         Row: {
           catatan: string | null
@@ -108,6 +152,57 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      pegawai: {
+        Row: {
+          alamat: string | null
+          catatan: string | null
+          created_at: string
+          gaji_pokok: number
+          id: string
+          jabatan: Database["public"]["Enums"]["pegawai_jabatan"]
+          nama_lengkap: string
+          nip: string
+          no_hp: string | null
+          status: Database["public"]["Enums"]["pegawai_status"]
+          tanggal_keluar: string | null
+          tanggal_masuk: string
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          alamat?: string | null
+          catatan?: string | null
+          created_at?: string
+          gaji_pokok?: number
+          id?: string
+          jabatan?: Database["public"]["Enums"]["pegawai_jabatan"]
+          nama_lengkap: string
+          nip: string
+          no_hp?: string | null
+          status?: Database["public"]["Enums"]["pegawai_status"]
+          tanggal_keluar?: string | null
+          tanggal_masuk?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          alamat?: string | null
+          catatan?: string | null
+          created_at?: string
+          gaji_pokok?: number
+          id?: string
+          jabatan?: Database["public"]["Enums"]["pegawai_jabatan"]
+          nama_lengkap?: string
+          nip?: string
+          no_hp?: string | null
+          status?: Database["public"]["Enums"]["pegawai_status"]
+          tanggal_keluar?: string | null
+          tanggal_masuk?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
       }
       pembayaran: {
         Row: {
@@ -152,6 +247,59 @@ export type Database = {
             columns: ["tagihan_id"]
             isOneToOne: false
             referencedRelation: "tagihan"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      penggajian: {
+        Row: {
+          catatan: string | null
+          created_at: string
+          gaji_pokok: number
+          id: string
+          pegawai_id: string
+          periode: string
+          potongan: number
+          status: Database["public"]["Enums"]["penggajian_status"]
+          tanggal_bayar: string | null
+          total: number | null
+          tunjangan: number
+          updated_at: string
+        }
+        Insert: {
+          catatan?: string | null
+          created_at?: string
+          gaji_pokok?: number
+          id?: string
+          pegawai_id: string
+          periode: string
+          potongan?: number
+          status?: Database["public"]["Enums"]["penggajian_status"]
+          tanggal_bayar?: string | null
+          total?: number | null
+          tunjangan?: number
+          updated_at?: string
+        }
+        Update: {
+          catatan?: string | null
+          created_at?: string
+          gaji_pokok?: number
+          id?: string
+          pegawai_id?: string
+          periode?: string
+          potongan?: number
+          status?: Database["public"]["Enums"]["penggajian_status"]
+          tanggal_bayar?: string | null
+          total?: number | null
+          tunjangan?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "penggajian_pegawai_id_fkey"
+            columns: ["pegawai_id"]
+            isOneToOne: false
+            referencedRelation: "pegawai"
             referencedColumns: ["id"]
           },
         ]
@@ -418,6 +566,17 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "ustadz" | "wali" | "santri"
+      kehadiran_status: "hadir" | "izin" | "sakit" | "alpa" | "libur"
+      pegawai_jabatan:
+        | "pengasuh"
+        | "ustadz"
+        | "admin_tu"
+        | "keamanan"
+        | "dapur"
+        | "kebersihan"
+        | "lainnya"
+      pegawai_status: "aktif" | "cuti" | "nonaktif"
+      penggajian_status: "draft" | "dibayar"
       santri_status: "aktif" | "lulus" | "keluar"
       setoran_kualitas: "lancar" | "perlu_ulang" | "kurang"
       tagihan_status: "belum_bayar" | "sebagian" | "lunas" | "dibatalkan"
@@ -549,6 +708,18 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "ustadz", "wali", "santri"],
+      kehadiran_status: ["hadir", "izin", "sakit", "alpa", "libur"],
+      pegawai_jabatan: [
+        "pengasuh",
+        "ustadz",
+        "admin_tu",
+        "keamanan",
+        "dapur",
+        "kebersihan",
+        "lainnya",
+      ],
+      pegawai_status: ["aktif", "cuti", "nonaktif"],
+      penggajian_status: ["draft", "dibayar"],
       santri_status: ["aktif", "lulus", "keluar"],
       setoran_kualitas: ["lancar", "perlu_ulang", "kurang"],
       tagihan_status: ["belum_bayar", "sebagian", "lunas", "dibatalkan"],
