@@ -14,6 +14,7 @@ import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedSetoranRouteImport } from './routes/_authenticated/setoran'
 import { Route as AuthenticatedKeuanganRouteImport } from './routes/_authenticated/keuangan'
+import { Route as AuthenticatedKepegawaianRouteImport } from './routes/_authenticated/kepegawaian'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedSantriIndexRouteImport } from './routes/_authenticated/santri.index'
 import { Route as AuthenticatedSantriNewRouteImport } from './routes/_authenticated/santri.new'
@@ -43,6 +44,12 @@ const AuthenticatedKeuanganRoute = AuthenticatedKeuanganRouteImport.update({
   path: '/keuangan',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedKepegawaianRoute =
+  AuthenticatedKepegawaianRouteImport.update({
+    id: '/kepegawaian',
+    path: '/kepegawaian',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
@@ -69,6 +76,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/kepegawaian': typeof AuthenticatedKepegawaianRoute
   '/keuangan': typeof AuthenticatedKeuanganRoute
   '/setoran': typeof AuthenticatedSetoranRoute
   '/santri/$id': typeof AuthenticatedSantriIdRoute
@@ -79,6 +87,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/kepegawaian': typeof AuthenticatedKepegawaianRoute
   '/keuangan': typeof AuthenticatedKeuanganRoute
   '/setoran': typeof AuthenticatedSetoranRoute
   '/santri/$id': typeof AuthenticatedSantriIdRoute
@@ -91,6 +100,7 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/kepegawaian': typeof AuthenticatedKepegawaianRoute
   '/_authenticated/keuangan': typeof AuthenticatedKeuanganRoute
   '/_authenticated/setoran': typeof AuthenticatedSetoranRoute
   '/_authenticated/santri/$id': typeof AuthenticatedSantriIdRoute
@@ -103,6 +113,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/dashboard'
+    | '/kepegawaian'
     | '/keuangan'
     | '/setoran'
     | '/santri/$id'
@@ -113,6 +124,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/dashboard'
+    | '/kepegawaian'
     | '/keuangan'
     | '/setoran'
     | '/santri/$id'
@@ -124,6 +136,7 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/auth'
     | '/_authenticated/dashboard'
+    | '/_authenticated/kepegawaian'
     | '/_authenticated/keuangan'
     | '/_authenticated/setoran'
     | '/_authenticated/santri/$id'
@@ -174,6 +187,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedKeuanganRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/kepegawaian': {
+      id: '/_authenticated/kepegawaian'
+      path: '/kepegawaian'
+      fullPath: '/kepegawaian'
+      preLoaderRoute: typeof AuthenticatedKepegawaianRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/dashboard': {
       id: '/_authenticated/dashboard'
       path: '/dashboard'
@@ -207,6 +227,7 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedKepegawaianRoute: typeof AuthenticatedKepegawaianRoute
   AuthenticatedKeuanganRoute: typeof AuthenticatedKeuanganRoute
   AuthenticatedSetoranRoute: typeof AuthenticatedSetoranRoute
   AuthenticatedSantriIdRoute: typeof AuthenticatedSantriIdRoute
@@ -216,6 +237,7 @@ interface AuthenticatedRouteRouteChildren {
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedKepegawaianRoute: AuthenticatedKepegawaianRoute,
   AuthenticatedKeuanganRoute: AuthenticatedKeuanganRoute,
   AuthenticatedSetoranRoute: AuthenticatedSetoranRoute,
   AuthenticatedSantriIdRoute: AuthenticatedSantriIdRoute,
