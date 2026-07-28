@@ -1,13 +1,21 @@
 import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { toast } from "sonner";
-import { BookOpen, Loader2 } from "lucide-react";
+import { BookOpen, Loader2, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
+
+const DEMO_PASSWORD = "MsqDemo#2026";
+const DEMO_ACCOUNTS = [
+  { role: "Admin / TU", email: "admin@msq.demo", desc: "Akses penuh semua modul" },
+  { role: "Ustadz", email: "ustadz@msq.demo", desc: "Setoran hafalan & halaqah" },
+  { role: "Wali Santri", email: "wali@msq.demo", desc: "Progres anak & tagihan" },
+  { role: "Santri", email: "santri@msq.demo", desc: "Progres & tagihan pribadi" },
+];
 
 export const Route = createFileRoute("/auth")({
   ssr: false,
@@ -71,6 +79,15 @@ function AuthPage() {
     } else {
       toast.success("Akun dibuat. Silakan cek email untuk konfirmasi.");
     }
+  };
+
+  const loginAs = async (email: string) => {
+    setLoading(true);
+    const { error } = await supabase.auth.signInWithPassword({ email, password: DEMO_PASSWORD });
+    setLoading(false);
+    if (error) return toast.error(error.message);
+    toast.success(`Masuk sebagai ${email}`);
+    navigate({ to: "/dashboard" });
   };
 
   return (
@@ -141,6 +158,34 @@ function AuthPage() {
                 </form>
               </TabsContent>
             </Tabs>
+          </CardContent>
+        </Card>
+
+        <Card className="mt-6 w-full max-w-md border-dashed">
+          <CardHeader className="pb-3">
+            <CardTitle className="flex items-center gap-2 font-display text-base">
+              <Sparkles className="size-4 text-primary" /> Akun demo
+            </CardTitle>
+            <CardDescription>
+              Klik salah satu untuk langsung masuk. Kata sandi semua akun: <b>{DEMO_PASSWORD}</b>
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-2">
+            {DEMO_ACCOUNTS.map((a) => (
+              <button
+                key={a.email}
+                type="button"
+                disabled={loading}
+                onClick={() => loginAs(a.email)}
+                className="flex w-full items-center justify-between gap-3 rounded-lg border bg-card px-3 py-2 text-left transition hover:border-primary hover:bg-accent/40 disabled:opacity-60"
+              >
+                <span className="min-w-0">
+                  <span className="block text-sm font-medium">{a.role}</span>
+                  <span className="block truncate text-xs text-muted-foreground">{a.email} · {a.desc}</span>
+                </span>
+                <span className="shrink-0 text-xs font-medium text-primary">Masuk →</span>
+              </button>
+            ))}
           </CardContent>
         </Card>
       </div>

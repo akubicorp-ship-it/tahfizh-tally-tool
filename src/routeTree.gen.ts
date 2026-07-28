@@ -12,9 +12,11 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedUsersRouteImport } from './routes/_authenticated/users'
 import { Route as AuthenticatedSetoranRouteImport } from './routes/_authenticated/setoran'
 import { Route as AuthenticatedKeuanganRouteImport } from './routes/_authenticated/keuangan'
 import { Route as AuthenticatedKepegawaianRouteImport } from './routes/_authenticated/kepegawaian'
+import { Route as AuthenticatedHalaqahRouteImport } from './routes/_authenticated/halaqah'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedSantriIndexRouteImport } from './routes/_authenticated/santri.index'
 import { Route as AuthenticatedSantriNewRouteImport } from './routes/_authenticated/santri.new'
@@ -34,6 +36,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedUsersRoute = AuthenticatedUsersRouteImport.update({
+  id: '/users',
+  path: '/users',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedSetoranRoute = AuthenticatedSetoranRouteImport.update({
   id: '/setoran',
   path: '/setoran',
@@ -50,6 +57,11 @@ const AuthenticatedKepegawaianRoute =
     path: '/kepegawaian',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedHalaqahRoute = AuthenticatedHalaqahRouteImport.update({
+  id: '/halaqah',
+  path: '/halaqah',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
@@ -76,9 +88,11 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/halaqah': typeof AuthenticatedHalaqahRoute
   '/kepegawaian': typeof AuthenticatedKepegawaianRoute
   '/keuangan': typeof AuthenticatedKeuanganRoute
   '/setoran': typeof AuthenticatedSetoranRoute
+  '/users': typeof AuthenticatedUsersRoute
   '/santri/$id': typeof AuthenticatedSantriIdRoute
   '/santri/new': typeof AuthenticatedSantriNewRoute
   '/santri/': typeof AuthenticatedSantriIndexRoute
@@ -87,9 +101,11 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/halaqah': typeof AuthenticatedHalaqahRoute
   '/kepegawaian': typeof AuthenticatedKepegawaianRoute
   '/keuangan': typeof AuthenticatedKeuanganRoute
   '/setoran': typeof AuthenticatedSetoranRoute
+  '/users': typeof AuthenticatedUsersRoute
   '/santri/$id': typeof AuthenticatedSantriIdRoute
   '/santri/new': typeof AuthenticatedSantriNewRoute
   '/santri': typeof AuthenticatedSantriIndexRoute
@@ -100,9 +116,11 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/halaqah': typeof AuthenticatedHalaqahRoute
   '/_authenticated/kepegawaian': typeof AuthenticatedKepegawaianRoute
   '/_authenticated/keuangan': typeof AuthenticatedKeuanganRoute
   '/_authenticated/setoran': typeof AuthenticatedSetoranRoute
+  '/_authenticated/users': typeof AuthenticatedUsersRoute
   '/_authenticated/santri/$id': typeof AuthenticatedSantriIdRoute
   '/_authenticated/santri/new': typeof AuthenticatedSantriNewRoute
   '/_authenticated/santri/': typeof AuthenticatedSantriIndexRoute
@@ -113,9 +131,11 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/dashboard'
+    | '/halaqah'
     | '/kepegawaian'
     | '/keuangan'
     | '/setoran'
+    | '/users'
     | '/santri/$id'
     | '/santri/new'
     | '/santri/'
@@ -124,9 +144,11 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/dashboard'
+    | '/halaqah'
     | '/kepegawaian'
     | '/keuangan'
     | '/setoran'
+    | '/users'
     | '/santri/$id'
     | '/santri/new'
     | '/santri'
@@ -136,9 +158,11 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/auth'
     | '/_authenticated/dashboard'
+    | '/_authenticated/halaqah'
     | '/_authenticated/kepegawaian'
     | '/_authenticated/keuangan'
     | '/_authenticated/setoran'
+    | '/_authenticated/users'
     | '/_authenticated/santri/$id'
     | '/_authenticated/santri/new'
     | '/_authenticated/santri/'
@@ -173,6 +197,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/users': {
+      id: '/_authenticated/users'
+      path: '/users'
+      fullPath: '/users'
+      preLoaderRoute: typeof AuthenticatedUsersRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/setoran': {
       id: '/_authenticated/setoran'
       path: '/setoran'
@@ -192,6 +223,13 @@ declare module '@tanstack/react-router' {
       path: '/kepegawaian'
       fullPath: '/kepegawaian'
       preLoaderRoute: typeof AuthenticatedKepegawaianRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/halaqah': {
+      id: '/_authenticated/halaqah'
+      path: '/halaqah'
+      fullPath: '/halaqah'
+      preLoaderRoute: typeof AuthenticatedHalaqahRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/dashboard': {
@@ -227,9 +265,11 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedHalaqahRoute: typeof AuthenticatedHalaqahRoute
   AuthenticatedKepegawaianRoute: typeof AuthenticatedKepegawaianRoute
   AuthenticatedKeuanganRoute: typeof AuthenticatedKeuanganRoute
   AuthenticatedSetoranRoute: typeof AuthenticatedSetoranRoute
+  AuthenticatedUsersRoute: typeof AuthenticatedUsersRoute
   AuthenticatedSantriIdRoute: typeof AuthenticatedSantriIdRoute
   AuthenticatedSantriNewRoute: typeof AuthenticatedSantriNewRoute
   AuthenticatedSantriIndexRoute: typeof AuthenticatedSantriIndexRoute
@@ -237,9 +277,11 @@ interface AuthenticatedRouteRouteChildren {
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedHalaqahRoute: AuthenticatedHalaqahRoute,
   AuthenticatedKepegawaianRoute: AuthenticatedKepegawaianRoute,
   AuthenticatedKeuanganRoute: AuthenticatedKeuanganRoute,
   AuthenticatedSetoranRoute: AuthenticatedSetoranRoute,
+  AuthenticatedUsersRoute: AuthenticatedUsersRoute,
   AuthenticatedSantriIdRoute: AuthenticatedSantriIdRoute,
   AuthenticatedSantriNewRoute: AuthenticatedSantriNewRoute,
   AuthenticatedSantriIndexRoute: AuthenticatedSantriIndexRoute,
