@@ -17,6 +17,7 @@ import { Route as AuthenticatedSetoranRouteImport } from './routes/_authenticate
 import { Route as AuthenticatedKeuanganRouteImport } from './routes/_authenticated/keuangan'
 import { Route as AuthenticatedKepegawaianRouteImport } from './routes/_authenticated/kepegawaian'
 import { Route as AuthenticatedHalaqahRouteImport } from './routes/_authenticated/halaqah'
+import { Route as AuthenticatedDonasiRouteImport } from './routes/_authenticated/donasi'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedSantriIndexRouteImport } from './routes/_authenticated/santri.index'
 import { Route as AuthenticatedSantriNewRouteImport } from './routes/_authenticated/santri.new'
@@ -62,6 +63,11 @@ const AuthenticatedHalaqahRoute = AuthenticatedHalaqahRouteImport.update({
   path: '/halaqah',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedDonasiRoute = AuthenticatedDonasiRouteImport.update({
+  id: '/donasi',
+  path: '/donasi',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
@@ -88,6 +94,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/donasi': typeof AuthenticatedDonasiRoute
   '/halaqah': typeof AuthenticatedHalaqahRoute
   '/kepegawaian': typeof AuthenticatedKepegawaianRoute
   '/keuangan': typeof AuthenticatedKeuanganRoute
@@ -101,6 +108,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/donasi': typeof AuthenticatedDonasiRoute
   '/halaqah': typeof AuthenticatedHalaqahRoute
   '/kepegawaian': typeof AuthenticatedKepegawaianRoute
   '/keuangan': typeof AuthenticatedKeuanganRoute
@@ -116,6 +124,7 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/donasi': typeof AuthenticatedDonasiRoute
   '/_authenticated/halaqah': typeof AuthenticatedHalaqahRoute
   '/_authenticated/kepegawaian': typeof AuthenticatedKepegawaianRoute
   '/_authenticated/keuangan': typeof AuthenticatedKeuanganRoute
@@ -131,6 +140,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/dashboard'
+    | '/donasi'
     | '/halaqah'
     | '/kepegawaian'
     | '/keuangan'
@@ -144,6 +154,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/dashboard'
+    | '/donasi'
     | '/halaqah'
     | '/kepegawaian'
     | '/keuangan'
@@ -158,6 +169,7 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/auth'
     | '/_authenticated/dashboard'
+    | '/_authenticated/donasi'
     | '/_authenticated/halaqah'
     | '/_authenticated/kepegawaian'
     | '/_authenticated/keuangan'
@@ -232,6 +244,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedHalaqahRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/donasi': {
+      id: '/_authenticated/donasi'
+      path: '/donasi'
+      fullPath: '/donasi'
+      preLoaderRoute: typeof AuthenticatedDonasiRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/dashboard': {
       id: '/_authenticated/dashboard'
       path: '/dashboard'
@@ -265,6 +284,7 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedDonasiRoute: typeof AuthenticatedDonasiRoute
   AuthenticatedHalaqahRoute: typeof AuthenticatedHalaqahRoute
   AuthenticatedKepegawaianRoute: typeof AuthenticatedKepegawaianRoute
   AuthenticatedKeuanganRoute: typeof AuthenticatedKeuanganRoute
@@ -277,6 +297,7 @@ interface AuthenticatedRouteRouteChildren {
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedDonasiRoute: AuthenticatedDonasiRoute,
   AuthenticatedHalaqahRoute: AuthenticatedHalaqahRoute,
   AuthenticatedKepegawaianRoute: AuthenticatedKepegawaianRoute,
   AuthenticatedKeuanganRoute: AuthenticatedKeuanganRoute,

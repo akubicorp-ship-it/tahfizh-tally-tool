@@ -14,6 +14,102 @@ export type Database = {
   }
   public: {
     Tables: {
+      donasi: {
+        Row: {
+          catatan: string | null
+          created_at: string
+          dicatat_oleh: string | null
+          donatur_id: string | null
+          id: string
+          jumlah: number
+          metode: string
+          nama_donatur: string | null
+          no_referensi: string | null
+          program_id: string | null
+          status: Database["public"]["Enums"]["donasi_status"]
+          tanggal: string
+          updated_at: string
+        }
+        Insert: {
+          catatan?: string | null
+          created_at?: string
+          dicatat_oleh?: string | null
+          donatur_id?: string | null
+          id?: string
+          jumlah?: number
+          metode?: string
+          nama_donatur?: string | null
+          no_referensi?: string | null
+          program_id?: string | null
+          status?: Database["public"]["Enums"]["donasi_status"]
+          tanggal?: string
+          updated_at?: string
+        }
+        Update: {
+          catatan?: string | null
+          created_at?: string
+          dicatat_oleh?: string | null
+          donatur_id?: string | null
+          id?: string
+          jumlah?: number
+          metode?: string
+          nama_donatur?: string | null
+          no_referensi?: string | null
+          program_id?: string | null
+          status?: Database["public"]["Enums"]["donasi_status"]
+          tanggal?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "donasi_donatur_id_fkey"
+            columns: ["donatur_id"]
+            isOneToOne: false
+            referencedRelation: "donatur"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "donasi_program_id_fkey"
+            columns: ["program_id"]
+            isOneToOne: false
+            referencedRelation: "program_donasi"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      donatur: {
+        Row: {
+          alamat: string | null
+          anonim: boolean
+          created_at: string
+          email: string | null
+          id: string
+          nama: string
+          no_hp: string | null
+          updated_at: string
+        }
+        Insert: {
+          alamat?: string | null
+          anonim?: boolean
+          created_at?: string
+          email?: string | null
+          id?: string
+          nama: string
+          no_hp?: string | null
+          updated_at?: string
+        }
+        Update: {
+          alamat?: string | null
+          anonim?: boolean
+          created_at?: string
+          email?: string | null
+          id?: string
+          nama?: string
+          no_hp?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       halaqah: {
         Row: {
           created_at: string
@@ -325,6 +421,45 @@ export type Database = {
         }
         Relationships: []
       }
+      program_donasi: {
+        Row: {
+          created_at: string
+          deskripsi: string | null
+          id: string
+          jenis: Database["public"]["Enums"]["program_jenis"]
+          nama: string
+          status: Database["public"]["Enums"]["program_status"]
+          tanggal_mulai: string
+          tanggal_selesai: string | null
+          target: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          deskripsi?: string | null
+          id?: string
+          jenis?: Database["public"]["Enums"]["program_jenis"]
+          nama: string
+          status?: Database["public"]["Enums"]["program_status"]
+          tanggal_mulai?: string
+          tanggal_selesai?: string | null
+          target?: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          deskripsi?: string | null
+          id?: string
+          jenis?: Database["public"]["Enums"]["program_jenis"]
+          nama?: string
+          status?: Database["public"]["Enums"]["program_status"]
+          tanggal_mulai?: string
+          tanggal_selesai?: string | null
+          target?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       santri: {
         Row: {
           alamat: string | null
@@ -497,6 +632,94 @@ export type Database = {
           },
         ]
       }
+      transaksi_usaha: {
+        Row: {
+          created_at: string
+          dicatat_oleh: string | null
+          id: string
+          jenis: Database["public"]["Enums"]["transaksi_jenis"]
+          jumlah: number
+          kategori: string | null
+          keterangan: string | null
+          tanggal: string
+          unit_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          dicatat_oleh?: string | null
+          id?: string
+          jenis?: Database["public"]["Enums"]["transaksi_jenis"]
+          jumlah?: number
+          kategori?: string | null
+          keterangan?: string | null
+          tanggal?: string
+          unit_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          dicatat_oleh?: string | null
+          id?: string
+          jenis?: Database["public"]["Enums"]["transaksi_jenis"]
+          jumlah?: number
+          kategori?: string | null
+          keterangan?: string | null
+          tanggal?: string
+          unit_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "transaksi_usaha_unit_id_fkey"
+            columns: ["unit_id"]
+            isOneToOne: false
+            referencedRelation: "unit_usaha"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      unit_usaha: {
+        Row: {
+          created_at: string
+          deskripsi: string | null
+          id: string
+          jenis: string | null
+          nama: string
+          penanggung_jawab: string | null
+          status: Database["public"]["Enums"]["usaha_status"]
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          deskripsi?: string | null
+          id?: string
+          jenis?: string | null
+          nama: string
+          penanggung_jawab?: string | null
+          status?: Database["public"]["Enums"]["usaha_status"]
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          deskripsi?: string | null
+          id?: string
+          jenis?: string | null
+          nama?: string
+          penanggung_jawab?: string | null
+          status?: Database["public"]["Enums"]["usaha_status"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "unit_usaha_penanggung_jawab_fkey"
+            columns: ["penanggung_jawab"]
+            isOneToOne: false
+            referencedRelation: "pegawai"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_roles: {
         Row: {
           created_at: string
@@ -566,6 +789,7 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "ustadz" | "wali" | "santri"
+      donasi_status: "menunggu" | "terverifikasi" | "ditolak"
       kehadiran_status: "hadir" | "izin" | "sakit" | "alpa" | "libur"
       pegawai_jabatan:
         | "pengasuh"
@@ -577,9 +801,13 @@ export type Database = {
         | "lainnya"
       pegawai_status: "aktif" | "cuti" | "nonaktif"
       penggajian_status: "draft" | "dibayar"
+      program_jenis: "donasi" | "wakaf" | "zakat" | "infaq"
+      program_status: "aktif" | "selesai" | "ditutup"
       santri_status: "aktif" | "lulus" | "keluar"
       setoran_kualitas: "lancar" | "perlu_ulang" | "kurang"
       tagihan_status: "belum_bayar" | "sebagian" | "lunas" | "dibatalkan"
+      transaksi_jenis: "pemasukan" | "pengeluaran"
+      usaha_status: "aktif" | "nonaktif"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -708,6 +936,7 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "ustadz", "wali", "santri"],
+      donasi_status: ["menunggu", "terverifikasi", "ditolak"],
       kehadiran_status: ["hadir", "izin", "sakit", "alpa", "libur"],
       pegawai_jabatan: [
         "pengasuh",
@@ -720,9 +949,13 @@ export const Constants = {
       ],
       pegawai_status: ["aktif", "cuti", "nonaktif"],
       penggajian_status: ["draft", "dibayar"],
+      program_jenis: ["donasi", "wakaf", "zakat", "infaq"],
+      program_status: ["aktif", "selesai", "ditutup"],
       santri_status: ["aktif", "lulus", "keluar"],
       setoran_kualitas: ["lancar", "perlu_ulang", "kurang"],
       tagihan_status: ["belum_bayar", "sebagian", "lunas", "dibatalkan"],
+      transaksi_jenis: ["pemasukan", "pengeluaran"],
+      usaha_status: ["aktif", "nonaktif"],
     },
   },
 } as const
