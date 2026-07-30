@@ -9,6 +9,7 @@ import {
   Shield,
   Wallet,
   Briefcase,
+  HeartHandshake,
 } from "lucide-react";
 import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
@@ -37,6 +38,7 @@ const NAV: Record<AppRole, NavItem[]> = {
     { title: "Halaqah", url: "/halaqah", icon: BookOpen },
     { title: "Setoran Hafalan", url: "/setoran", icon: ClipboardCheck },
     { title: "Keuangan & SPP", url: "/keuangan", icon: Wallet },
+    { title: "Donasi & Unit Usaha", url: "/donasi", icon: HeartHandshake },
     { title: "SDM & Kepegawaian", url: "/kepegawaian", icon: Briefcase },
     { title: "Manajemen Pengguna", url: "/users", icon: Shield },
   ],
@@ -46,16 +48,19 @@ const NAV: Record<AppRole, NavItem[]> = {
     { title: "Input Setoran", url: "/setoran", icon: ClipboardCheck },
     { title: "Halaqah", url: "/halaqah", icon: BookOpen },
     { title: "Kepegawaian Saya", url: "/kepegawaian", icon: Briefcase },
+    { title: "Donasi & Wakaf", url: "/donasi", icon: HeartHandshake },
   ],
   wali: [
     { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
     { title: "Progres Anak", url: "/santri", icon: GraduationCap },
     { title: "Tagihan & SPP", url: "/keuangan", icon: Wallet },
+    { title: "Donasi & Wakaf", url: "/donasi", icon: HeartHandshake },
   ],
   santri: [
     { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
     { title: "Progres Saya", url: "/santri", icon: GraduationCap },
     { title: "Tagihan Saya", url: "/keuangan", icon: Wallet },
+    { title: "Donasi & Wakaf", url: "/donasi", icon: HeartHandshake },
   ],
 };
 
