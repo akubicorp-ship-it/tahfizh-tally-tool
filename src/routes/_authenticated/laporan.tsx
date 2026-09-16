@@ -27,7 +27,7 @@ export const Route = createFileRoute("/_authenticated/laporan")({
     const { data } = await supabase.auth.getUser();
     if (!data.user) throw redirect({ to: "/auth" });
   },
-  component: LaporanPage;
+  component: LaporanPage,
 });
 
 const rupiah = (n: number) =>
