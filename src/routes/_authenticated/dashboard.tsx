@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { BookOpen, GraduationCap, ClipboardCheck, Users, ArrowRight } from "lucide-react";
+import { BookOpen, GraduationCap, ClipboardCheck, Users, ArrowRight, Wallet, HeartHandshake, Briefcase, AlertTriangle } from "lucide-react";
+import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -8,9 +9,23 @@ import { supabase } from "@/integrations/supabase/client";
 import { useCurrentUser, primaryRole, roleLabel } from "@/hooks/use-auth";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
-  head: () => ({ meta: [{ title: "Dashboard · MSQ" }] }),
+  head: () => ({
+    meta: [
+      { title: "Dashboard Eksekutif · MSQ" },
+      { name: "description", content: "Ringkasan santri, hafalan, keuangan, donasi, dan kepegawaian Ma'had Sabilul Qur'an." },
+      { property: "og:title", content: "Dashboard Eksekutif · MSQ" },
+      { property: "og:description", content: "Ringkasan operasional pesantren tahfizh dalam satu halaman." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
+    ],
+  }),
   component: Dashboard,
 });
+
+const rupiah = (n: number) =>
+  new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 }).format(n || 0);
+
+const MONTHS = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
 
 function Dashboard() {
   const { data: me } = useCurrentUser();
@@ -20,20 +35,62 @@ function Dashboard() {
     queryKey: ["dashboard-stats", role, me?.user.id],
     enabled: !!me,
     queryFn: async () => {
-      const [santri, halaqah, setoran] = await Promise.all([
-        supabase.from("santri").select("id, status", { count: "exact", head: false }),
+      const [santri, halaqah, setoranCount, setoranRecent, tagihan, pembayaran, donasi, pegawai] = await Promise.all([
+        supabase.from("santri").select("id, status"),
         supabase.from("halaqah").select("id", { count: "exact", head: true }),
         supabase.from("setoran_hafalan").select("id", { count: "exact", head: true }),
+        supabase.from("setoran_hafalan").select("tanggal").gte("tanggal", new Date(Date.now() - 1000 * 60 * 60 * 24 * 180).toISOString().slice(0, 10)),
+        supabase.from("tagihan").select("nominal, status"),
+        supabase.from("pembayaran").select("jumlah, tanggal"),
+        supabase.from("donasi").select("jumlah"),
+        supabase.from("pegawai").select("id, status"),
       ]);
-      const activeSantri = (santri.data ?? []).filter((s) => s.status === "aktif").length;
+      const santriRows = santri.data ?? [];
+      const tagihanRows = tagihan.data ?? [];
+      const tunggakan = tagihanRows
+        .filter((t) => t.status !== "lunas" && t.status !== "dibatalkan")
+        .reduce((a, t) => a + Number(t.nominal), 0);
+
+      const bulan = new Map<string, { setoran: number; kas: number }>();
+      const now = new Date();
+      for (let i = 5; i >= 0; i--) {
+        const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+        bulan.set(`${d.getFullYear()}-${d.getMonth()}`, { setoran: 0, kas: 0 });
+      }
+      for (const s of setoranRecent.data ?? []) {
+        const d = new Date(s.tanggal);
+        const k = `${d.getFullYear()}-${d.getMonth()}`;
+        const e = bulan.get(k);
+        if (e) e.setoran += 1;
+      }
+      for (const p of pembayaran.data ?? []) {
+        const d = new Date(p.tanggal);
+        const k = `${d.getFullYear()}-${d.getMonth()}`;
+        const e = bulan.get(k);
+        if (e) e.kas += Number(p.jumlah);
+      }
+      const trend = [...bulan.entries()].map(([k, v]) => {
+        const [, m] = k.split("-");
+        return { bulan: MONTHS[Number(m)], setoran: v.setoran, kas: v.kas };
+      });
+
       return {
-        totalSantri: santri.data?.length ?? 0,
-        activeSantri,
+        totalSantri: santriRows.length,
+        activeSantri: santriRows.filter((s) => s.status === "aktif").length,
         totalHalaqah: halaqah.count ?? 0,
-        totalSetoran: setoran.count ?? 0,
+        totalSetoran: setoranCount.count ?? 0,
+        totalTagihan: tagihanRows.reduce((a, t) => a + Number(t.nominal), 0),
+        tunggakan,
+        kasMasuk: (pembayaran.data ?? []).reduce((a, p) => a + Number(p.jumlah), 0),
+        donasi: (donasi.data ?? []).reduce((a, d) => a + Number(d.jumlah), 0),
+        pegawaiAktif: (pegawai.data ?? []).filter((p) => p.status === "aktif").length,
+        trend,
       };
     },
   });
+
+  const s = stats.data;
+  const isExec = role === "admin" || role === "ustadz";
 
   return (
     <div className="mx-auto max-w-6xl space-y-6 px-6 py-8">
@@ -51,11 +108,60 @@ function Dashboard() {
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <StatCard icon={GraduationCap} label="Santri aktif" value={stats.data?.activeSantri ?? "—"} sub={`dari ${stats.data?.totalSantri ?? 0} total`} />
-        <StatCard icon={BookOpen} label="Halaqah" value={stats.data?.totalHalaqah ?? "—"} sub="kelompok belajar" />
-        <StatCard icon={ClipboardCheck} label="Total setoran" value={stats.data?.totalSetoran ?? "—"} sub="sepanjang waktu" />
-        <StatCard icon={Users} label="Peran Anda" value={me?.roles.length ?? 0} sub="peran aktif" />
+        <StatCard icon={GraduationCap} label="Santri aktif" value={s?.activeSantri ?? "—"} sub={`dari ${s?.totalSantri ?? 0} total`} />
+        <StatCard icon={BookOpen} label="Halaqah" value={s?.totalHalaqah ?? "—"} sub="kelompok belajar" />
+        <StatCard icon={ClipboardCheck} label="Total setoran" value={s?.totalSetoran ?? "—"} sub="sepanjang waktu" />
+        <StatCard icon={Briefcase} label="Pegawai aktif" value={s?.pegawaiAktif ?? "—"} sub="ustadz & staf" />
       </div>
+
+      {isExec && (
+        <>
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            <StatCard icon={Wallet} label="Total tagihan" value={rupiah(s?.totalTagihan ?? 0)} sub="seluruh periode" />
+            <StatCard icon={Wallet} label="Kas masuk SPP" value={rupiah(s?.kasMasuk ?? 0)} sub="pembayaran diterima" />
+            <StatCard icon={AlertTriangle} label="Tunggakan" value={rupiah(s?.tunggakan ?? 0)} sub="belum lunas" />
+            <StatCard icon={HeartHandshake} label="Donasi & wakaf" value={rupiah(s?.donasi ?? 0)} sub="terkumpul" />
+          </div>
+
+          <div className="grid gap-4 lg:grid-cols-2">
+            <Card>
+              <CardHeader>
+                <CardTitle className="font-display text-lg">Tren setoran 6 bulan</CardTitle>
+                <CardDescription>Jumlah setoran hafalan per bulan</CardDescription>
+              </CardHeader>
+              <CardContent className="h-64">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={s?.trend ?? []}>
+                    <CartesianGrid strokeDasharray="3 3" className="stroke-border" vertical={false} />
+                    <XAxis dataKey="bulan" tickLine={false} axisLine={false} className="text-xs" />
+                    <YAxis tickLine={false} axisLine={false} className="text-xs" allowDecimals={false} />
+                    <Tooltip />
+                    <Bar dataKey="setoran" name="Setoran" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle className="font-display text-lg">Arus kas SPP 6 bulan</CardTitle>
+                <CardDescription>Pembayaran diterima per bulan</CardDescription>
+              </CardHeader>
+              <CardContent className="h-64">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={s?.trend ?? []}>
+                    <CartesianGrid strokeDasharray="3 3" className="stroke-border" vertical={false} />
+                    <XAxis dataKey="bulan" tickLine={false} axisLine={false} className="text-xs" />
+                    <YAxis tickLine={false} axisLine={false} className="text-xs" width={70} tickFormatter={(v) => `${Math.round(Number(v) / 1000)}rb`} />
+                    <Tooltip formatter={(v) => rupiah(Number(v))} />
+                    <Bar dataKey="kas" name="Kas masuk" fill="hsl(var(--accent))" radius={[4, 4, 0, 0]} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </CardContent>
+            </Card>
+          </div>
+        </>
+      )}
 
       <div className="grid gap-4 lg:grid-cols-2">
         <Card>
@@ -64,10 +170,15 @@ function Dashboard() {
             <CardDescription>Pintasan berdasarkan peran Anda</CardDescription>
           </CardHeader>
           <CardContent className="flex flex-wrap gap-2">
-            {(role === "admin" || role === "ustadz") && (
-              <Button asChild variant="secondary">
-                <Link to="/setoran">Catat setoran <ArrowRight className="ml-1 size-4" /></Link>
-              </Button>
+            {isExec && (
+              <>
+                <Button asChild variant="secondary">
+                  <Link to="/setoran">Catat setoran <ArrowRight className="ml-1 size-4" /></Link>
+                </Button>
+                <Button asChild variant="outline">
+                  <Link to="/laporan">Buka laporan</Link>
+                </Button>
+              </>
             )}
             {role === "admin" && (
               <>
@@ -88,15 +199,16 @@ function Dashboard() {
         <Card>
           <CardHeader>
             <CardTitle className="font-display">Modul yang tersedia</CardTitle>
-            <CardDescription>Fondasi MVP — modul lain menyusul</CardDescription>
+            <CardDescription>Semua modul inti sudah aktif</CardDescription>
           </CardHeader>
           <CardContent className="grid gap-2 text-sm">
             <ModuleRow name="Auth & Peran" status="Aktif" />
             <ModuleRow name="Data Induk Santri" status="Aktif" />
             <ModuleRow name="Akademik & Tahfizh" status="Aktif" />
-            <ModuleRow name="Keuangan & SPP" status="Menyusul" muted />
-            <ModuleRow name="SDM & Kepegawaian" status="Menyusul" muted />
-            <ModuleRow name="Donasi & Wakaf" status="Menyusul" muted />
+            <ModuleRow name="Keuangan & SPP" status="Aktif" />
+            <ModuleRow name="SDM & Kepegawaian" status="Aktif" />
+            <ModuleRow name="Donasi & Unit Usaha" status="Aktif" />
+            <ModuleRow name="Laporan & Rekap" status="Aktif" />
           </CardContent>
         </Card>
       </div>
