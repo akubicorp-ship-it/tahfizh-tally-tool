@@ -82,18 +82,67 @@ function SetoranPage() {
     onError: (e: Error) => toast.error(e.message),
   });
 
+  const munaqasyahQ = useQuery({
+    queryKey: ["munaqasyah-recent"],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("munaqasyah")
+        .select("id, tanggal, juz, nilai, catatan, santri:santri_id(nama_lengkap, nis)")
+        .order("created_at", { ascending: false })
+        .limit(30);
+      return data ?? [];
+    },
+  });
+
+  const [uji, setUji] = useState({
+    santri_id: "",
+    tanggal: new Date().toISOString().slice(0, 10),
+    juz: "1",
+    nilai: "",
+    catatan: "",
+  });
+
+  const createUji = useMutation({
+    mutationFn: async () => {
+      if (!me) throw new Error("Not authenticated");
+      const { error } = await supabase.from("munaqasyah").insert({
+        santri_id: uji.santri_id,
+        penguji_id: me.user.id,
+        tanggal: uji.tanggal,
+        juz: Number(uji.juz),
+        nilai: uji.nilai ? Number(uji.nilai) : null,
+        catatan: uji.catatan || null,
+      });
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast.success("Hasil munaqasyah tersimpan");
+      queryClient.invalidateQueries({ queryKey: ["munaqasyah-recent"] });
+      queryClient.invalidateQueries({ queryKey: ["munaqasyah"] });
+      setUji({ ...uji, nilai: "", catatan: "" });
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
   return (
     <div className="mx-auto max-w-6xl space-y-6 px-6 py-8">
       <div>
-        <h1 className="font-display text-3xl font-semibold">Setoran Hafalan</h1>
+        <h1 className="font-display text-3xl font-semibold">Akademik & Tahfizh</h1>
         <p className="text-muted-foreground">
-          {canInput ? "Catat setoran hari ini dan lihat riwayat terbaru." : "Riwayat setoran terkini."}
+          {canInput ? "Catat setoran harian dan hasil ujian munaqasyah per juz." : "Riwayat setoran dan munaqasyah terkini."}
         </p>
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-5">
+      <Tabs defaultValue="setoran" className="space-y-6">
+        <TabsList>
+          <TabsTrigger value="setoran">Setoran Harian</TabsTrigger>
+          <TabsTrigger value="munaqasyah">Munaqasyah</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="setoran" className="grid gap-6 lg:grid-cols-5">
         {canInput && (
           <Card className="lg:col-span-2">
+
             <CardHeader>
               <CardTitle className="font-display">Input setoran</CardTitle>
               <CardDescription>Cepat, satu setoran per santri per hari.</CardDescription>
