@@ -13,7 +13,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useCurrentUser, primaryRole } from "@/hooks/use-auth";
+
 
 export const Route = createFileRoute("/_authenticated/setoran")({
   head: () => ({ meta: [{ title: "Setoran Hafalan · MSQ" }] }),
