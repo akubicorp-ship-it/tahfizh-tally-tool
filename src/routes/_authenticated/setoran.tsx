@@ -243,7 +243,91 @@ function SetoranPage() {
             })}
           </CardContent>
         </Card>
-      </div>
+        </TabsContent>
+
+        <TabsContent value="munaqasyah" className="grid gap-6 lg:grid-cols-5">
+          {canInput && (
+            <Card className="lg:col-span-2">
+              <CardHeader>
+                <CardTitle className="font-display">Input munaqasyah</CardTitle>
+                <CardDescription>Ujian kelulusan hafalan per juz (nilai 0–100).</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <form
+                  className="space-y-4"
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    if (!uji.santri_id) return toast.error("Pilih santri terlebih dahulu");
+                    createUji.mutate();
+                  }}
+                >
+                  <div className="space-y-2">
+                    <Label>Santri</Label>
+                    <Select value={uji.santri_id} onValueChange={(v) => setUji({ ...uji, santri_id: v })}>
+                      <SelectTrigger><SelectValue placeholder="Pilih santri" /></SelectTrigger>
+                      <SelectContent>
+                        {(santriQ.data ?? []).map((s) => (
+                          <SelectItem key={s.id} value={s.id}>{s.nama_lengkap} · {s.nis}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="grid grid-cols-3 gap-3">
+                    <div className="space-y-2">
+                      <Label>Tanggal</Label>
+                      <Input type="date" value={uji.tanggal} onChange={(e) => setUji({ ...uji, tanggal: e.target.value })} />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Juz</Label>
+                      <Input type="number" min={1} max={30} value={uji.juz} onChange={(e) => setUji({ ...uji, juz: e.target.value })} />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Nilai</Label>
+                      <Input type="number" min={0} max={100} value={uji.nilai} onChange={(e) => setUji({ ...uji, nilai: e.target.value })} />
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Catatan penguji</Label>
+                    <Textarea rows={2} value={uji.catatan} onChange={(e) => setUji({ ...uji, catatan: e.target.value })} placeholder="Opsional" />
+                  </div>
+                  <Button type="submit" className="w-full" disabled={createUji.isPending}>
+                    {createUji.isPending && <Loader2 className="mr-2 size-4 animate-spin" />} Simpan hasil munaqasyah
+                  </Button>
+                  <p className="text-xs text-muted-foreground">Nilai minimal 70 dihitung sebagai juz lulus pada progres santri.</p>
+                </form>
+              </CardContent>
+            </Card>
+          )}
+
+          <Card className={canInput ? "lg:col-span-3" : "lg:col-span-5"}>
+            <CardHeader>
+              <CardTitle className="font-display">Hasil munaqasyah terbaru</CardTitle>
+              <CardDescription>30 hasil ujian paling baru</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-2">
+              {munaqasyahQ.data?.length === 0 && <p className="py-4 text-sm text-muted-foreground">Belum ada data.</p>}
+              {(munaqasyahQ.data ?? []).map((m) => {
+                const santri = m.santri as { nama_lengkap: string; nis: string } | null;
+                const lulus = (m.nilai ?? 0) >= 70;
+                return (
+                  <div key={m.id} className="flex flex-wrap items-center justify-between gap-2 rounded-md border px-3 py-2 text-sm">
+                    <div className="min-w-0">
+                      <div className="font-medium">{santri?.nama_lengkap ?? "—"}</div>
+                      <div className="text-xs text-muted-foreground">
+                        {format(new Date(m.tanggal), "d MMM yyyy", { locale: idLocale })} · Juz {m.juz}
+                        {m.nilai !== null && ` · Nilai ${m.nilai}`}
+                        {m.catatan && ` · ${m.catatan}`}
+                      </div>
+                    </div>
+                    <Badge variant={lulus ? "secondary" : "destructive"}>{lulus ? "Lulus" : "Belum lulus"}</Badge>
+                  </div>
+                );
+              })}
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
+
     </div>
   );
 }
