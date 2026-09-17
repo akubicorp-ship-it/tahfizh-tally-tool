@@ -13,7 +13,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useCurrentUser, primaryRole } from "@/hooks/use-auth";
+
 
 export const Route = createFileRoute("/_authenticated/setoran")({
   head: () => ({ meta: [{ title: "Setoran Hafalan · MSQ" }] }),
@@ -80,18 +82,67 @@ function SetoranPage() {
     onError: (e: Error) => toast.error(e.message),
   });
 
+  const munaqasyahQ = useQuery({
+    queryKey: ["munaqasyah-recent"],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("munaqasyah")
+        .select("id, tanggal, juz, nilai, catatan, santri:santri_id(nama_lengkap, nis)")
+        .order("created_at", { ascending: false })
+        .limit(30);
+      return data ?? [];
+    },
+  });
+
+  const [uji, setUji] = useState({
+    santri_id: "",
+    tanggal: new Date().toISOString().slice(0, 10),
+    juz: "1",
+    nilai: "",
+    catatan: "",
+  });
+
+  const createUji = useMutation({
+    mutationFn: async () => {
+      if (!me) throw new Error("Not authenticated");
+      const { error } = await supabase.from("munaqasyah").insert({
+        santri_id: uji.santri_id,
+        penguji_id: me.user.id,
+        tanggal: uji.tanggal,
+        juz: Number(uji.juz),
+        nilai: uji.nilai ? Number(uji.nilai) : null,
+        catatan: uji.catatan || null,
+      });
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast.success("Hasil munaqasyah tersimpan");
+      queryClient.invalidateQueries({ queryKey: ["munaqasyah-recent"] });
+      queryClient.invalidateQueries({ queryKey: ["munaqasyah"] });
+      setUji({ ...uji, nilai: "", catatan: "" });
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
   return (
     <div className="mx-auto max-w-6xl space-y-6 px-6 py-8">
       <div>
-        <h1 className="font-display text-3xl font-semibold">Setoran Hafalan</h1>
+        <h1 className="font-display text-3xl font-semibold">Akademik & Tahfizh</h1>
         <p className="text-muted-foreground">
-          {canInput ? "Catat setoran hari ini dan lihat riwayat terbaru." : "Riwayat setoran terkini."}
+          {canInput ? "Catat setoran harian dan hasil ujian munaqasyah per juz." : "Riwayat setoran dan munaqasyah terkini."}
         </p>
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-5">
+      <Tabs defaultValue="setoran" className="space-y-6">
+        <TabsList>
+          <TabsTrigger value="setoran">Setoran Harian</TabsTrigger>
+          <TabsTrigger value="munaqasyah">Munaqasyah</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="setoran" className="grid gap-6 lg:grid-cols-5">
         {canInput && (
           <Card className="lg:col-span-2">
+
             <CardHeader>
               <CardTitle className="font-display">Input setoran</CardTitle>
               <CardDescription>Cepat, satu setoran per santri per hari.</CardDescription>
@@ -192,7 +243,91 @@ function SetoranPage() {
             })}
           </CardContent>
         </Card>
-      </div>
+        </TabsContent>
+
+        <TabsContent value="munaqasyah" className="grid gap-6 lg:grid-cols-5">
+          {canInput && (
+            <Card className="lg:col-span-2">
+              <CardHeader>
+                <CardTitle className="font-display">Input munaqasyah</CardTitle>
+                <CardDescription>Ujian kelulusan hafalan per juz (nilai 0–100).</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <form
+                  className="space-y-4"
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    if (!uji.santri_id) return toast.error("Pilih santri terlebih dahulu");
+                    createUji.mutate();
+                  }}
+                >
+                  <div className="space-y-2">
+                    <Label>Santri</Label>
+                    <Select value={uji.santri_id} onValueChange={(v) => setUji({ ...uji, santri_id: v })}>
+                      <SelectTrigger><SelectValue placeholder="Pilih santri" /></SelectTrigger>
+                      <SelectContent>
+                        {(santriQ.data ?? []).map((s) => (
+                          <SelectItem key={s.id} value={s.id}>{s.nama_lengkap} · {s.nis}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="grid grid-cols-3 gap-3">
+                    <div className="space-y-2">
+                      <Label>Tanggal</Label>
+                      <Input type="date" value={uji.tanggal} onChange={(e) => setUji({ ...uji, tanggal: e.target.value })} />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Juz</Label>
+                      <Input type="number" min={1} max={30} value={uji.juz} onChange={(e) => setUji({ ...uji, juz: e.target.value })} />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Nilai</Label>
+                      <Input type="number" min={0} max={100} value={uji.nilai} onChange={(e) => setUji({ ...uji, nilai: e.target.value })} />
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Catatan penguji</Label>
+                    <Textarea rows={2} value={uji.catatan} onChange={(e) => setUji({ ...uji, catatan: e.target.value })} placeholder="Opsional" />
+                  </div>
+                  <Button type="submit" className="w-full" disabled={createUji.isPending}>
+                    {createUji.isPending && <Loader2 className="mr-2 size-4 animate-spin" />} Simpan hasil munaqasyah
+                  </Button>
+                  <p className="text-xs text-muted-foreground">Nilai minimal 70 dihitung sebagai juz lulus pada progres santri.</p>
+                </form>
+              </CardContent>
+            </Card>
+          )}
+
+          <Card className={canInput ? "lg:col-span-3" : "lg:col-span-5"}>
+            <CardHeader>
+              <CardTitle className="font-display">Hasil munaqasyah terbaru</CardTitle>
+              <CardDescription>30 hasil ujian paling baru</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-2">
+              {munaqasyahQ.data?.length === 0 && <p className="py-4 text-sm text-muted-foreground">Belum ada data.</p>}
+              {(munaqasyahQ.data ?? []).map((m) => {
+                const santri = m.santri as { nama_lengkap: string; nis: string } | null;
+                const lulus = (m.nilai ?? 0) >= 70;
+                return (
+                  <div key={m.id} className="flex flex-wrap items-center justify-between gap-2 rounded-md border px-3 py-2 text-sm">
+                    <div className="min-w-0">
+                      <div className="font-medium">{santri?.nama_lengkap ?? "—"}</div>
+                      <div className="text-xs text-muted-foreground">
+                        {format(new Date(m.tanggal), "d MMM yyyy", { locale: idLocale })} · Juz {m.juz}
+                        {m.nilai !== null && ` · Nilai ${m.nilai}`}
+                        {m.catatan && ` · ${m.catatan}`}
+                      </div>
+                    </div>
+                    <Badge variant={lulus ? "secondary" : "destructive"}>{lulus ? "Lulus" : "Belum lulus"}</Badge>
+                  </div>
+                );
+              })}
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
+
     </div>
   );
 }
