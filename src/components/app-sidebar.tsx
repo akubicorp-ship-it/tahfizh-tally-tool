@@ -10,6 +10,7 @@ import {
   Wallet,
   Briefcase,
   HeartHandshake,
+  FileBarChart,
 } from "lucide-react";
 import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
@@ -40,6 +41,7 @@ const NAV: Record<AppRole, NavItem[]> = {
     { title: "Keuangan & SPP", url: "/keuangan", icon: Wallet },
     { title: "Donasi & Unit Usaha", url: "/donasi", icon: HeartHandshake },
     { title: "SDM & Kepegawaian", url: "/kepegawaian", icon: Briefcase },
+    { title: "Laporan & Rekap", url: "/laporan", icon: FileBarChart },
     { title: "Manajemen Pengguna", url: "/users", icon: Shield },
   ],
   ustadz: [
@@ -47,6 +49,7 @@ const NAV: Record<AppRole, NavItem[]> = {
     { title: "Data Santri", url: "/santri", icon: GraduationCap },
     { title: "Input Setoran", url: "/setoran", icon: ClipboardCheck },
     { title: "Halaqah", url: "/halaqah", icon: BookOpen },
+    { title: "Laporan & Rekap", url: "/laporan", icon: FileBarChart },
     { title: "Kepegawaian Saya", url: "/kepegawaian", icon: Briefcase },
     { title: "Donasi & Wakaf", url: "/donasi", icon: HeartHandshake },
   ],
