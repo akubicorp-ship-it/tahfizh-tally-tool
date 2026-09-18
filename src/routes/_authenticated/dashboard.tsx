@@ -1,7 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { BookOpen, GraduationCap, ClipboardCheck, Users, ArrowRight, Wallet, HeartHandshake, Briefcase, AlertTriangle } from "lucide-react";
-import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import { lazy, Suspense } from "react";
+import type { TrendPoint } from "@/components/dashboard-charts";
+
+const DashboardCharts = lazy(() => import("@/components/dashboard-charts"));
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
