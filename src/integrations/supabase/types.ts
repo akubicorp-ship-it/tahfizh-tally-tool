@@ -825,16 +825,7 @@ export type Database = {
       }
     }
     Views: {
-      transparansi_publik: {
-        Row: {
-          jumlah_donasi: number | null
-          jumlah_donatur: number | null
-          total_donasi: number | null
-          total_pemasukan_usaha: number | null
-          total_target_aktif: number | null
-        }
-        Relationships: []
-      }
+      [_ in never]: never
     }
     Functions: {
       has_role: {
@@ -847,6 +838,16 @@ export type Database = {
       is_wali_of: {
         Args: { _santri_id: string; _user_id: string }
         Returns: boolean
+      }
+      transparansi_publik: {
+        Args: never
+        Returns: {
+          jumlah_donasi: number
+          jumlah_donatur: number
+          total_donasi: number
+          total_pemasukan_usaha: number
+          total_target_aktif: number
+        }[]
       }
     }
     Enums: {
