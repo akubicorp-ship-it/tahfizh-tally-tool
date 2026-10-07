@@ -42,6 +42,9 @@ function Landing() {
           </Link>
           <div className="flex items-center gap-2">
             <Button asChild variant="ghost">
+              <Link to="/transparansi">Transparansi Donasi</Link>
+            </Button>
+            <Button asChild variant="outline">
               <Link to="/auth">Masuk</Link>
             </Button>
             <Button asChild>

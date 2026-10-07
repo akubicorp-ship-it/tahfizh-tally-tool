@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as TransparansiRouteImport } from './routes/transparansi'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
@@ -24,6 +25,11 @@ import { Route as AuthenticatedSantriIndexRouteImport } from './routes/_authenti
 import { Route as AuthenticatedSantriNewRouteImport } from './routes/_authenticated/santri.new'
 import { Route as AuthenticatedSantriIdRouteImport } from './routes/_authenticated/santri.$id'
 
+const TransparansiRoute = TransparansiRouteImport.update({
+  id: '/transparansi',
+  path: '/transparansi',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
@@ -99,6 +105,7 @@ const AuthenticatedSantriIdRoute = AuthenticatedSantriIdRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/transparansi': typeof TransparansiRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/donasi': typeof AuthenticatedDonasiRoute
   '/halaqah': typeof AuthenticatedHalaqahRoute
@@ -114,6 +121,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/transparansi': typeof TransparansiRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/donasi': typeof AuthenticatedDonasiRoute
   '/halaqah': typeof AuthenticatedHalaqahRoute
@@ -131,6 +139,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
+  '/transparansi': typeof TransparansiRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/donasi': typeof AuthenticatedDonasiRoute
   '/_authenticated/halaqah': typeof AuthenticatedHalaqahRoute
@@ -148,6 +157,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/auth'
+    | '/transparansi'
     | '/dashboard'
     | '/donasi'
     | '/halaqah'
@@ -163,6 +173,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/auth'
+    | '/transparansi'
     | '/dashboard'
     | '/donasi'
     | '/halaqah'
@@ -179,6 +190,7 @@ export interface FileRouteTypes {
     | '/'
     | '/_authenticated'
     | '/auth'
+    | '/transparansi'
     | '/_authenticated/dashboard'
     | '/_authenticated/donasi'
     | '/_authenticated/halaqah'
@@ -196,10 +208,18 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
+  TransparansiRoute: typeof TransparansiRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/transparansi': {
+      id: '/transparansi'
+      path: '/transparansi'
+      fullPath: '/transparansi'
+      preLoaderRoute: typeof TransparansiRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/auth': {
       id: '/auth'
       path: '/auth'
@@ -336,6 +356,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
+  TransparansiRoute: TransparansiRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

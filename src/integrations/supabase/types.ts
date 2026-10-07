@@ -844,6 +844,7 @@ export type Database = {
         Returns: {
           jumlah_donasi: number
           jumlah_donatur: number
+          program_aktif: Json
           total_donasi: number
           total_pemasukan_usaha: number
           total_target_aktif: number
