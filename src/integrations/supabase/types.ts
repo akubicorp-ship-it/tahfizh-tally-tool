@@ -134,6 +134,50 @@ export type Database = {
         }
         Relationships: []
       }
+      jadwal_munaqasyah: {
+        Row: {
+          catatan: string | null
+          created_at: string
+          created_by: string | null
+          id: string
+          juz: number
+          santri_id: string
+          status: Database["public"]["Enums"]["jadwal_status"]
+          tanggal: string
+          updated_at: string
+        }
+        Insert: {
+          catatan?: string | null
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          juz: number
+          santri_id: string
+          status?: Database["public"]["Enums"]["jadwal_status"]
+          tanggal: string
+          updated_at?: string
+        }
+        Update: {
+          catatan?: string | null
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          juz?: number
+          santri_id?: string
+          status?: Database["public"]["Enums"]["jadwal_status"]
+          tanggal?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "jadwal_munaqasyah_santri_id_fkey"
+            columns: ["santri_id"]
+            isOneToOne: false
+            referencedRelation: "santri"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       jenis_biaya: {
         Row: {
           berulang: boolean
@@ -302,6 +346,7 @@ export type Database = {
       }
       pembayaran: {
         Row: {
+          bukti_url: string | null
           catatan: string | null
           created_at: string
           dicatat_oleh: string | null
@@ -309,11 +354,13 @@ export type Database = {
           jumlah: number
           metode: string
           no_referensi: string | null
+          status_verifikasi: string
           tagihan_id: string
           tanggal: string
           updated_at: string
         }
         Insert: {
+          bukti_url?: string | null
           catatan?: string | null
           created_at?: string
           dicatat_oleh?: string | null
@@ -321,11 +368,13 @@ export type Database = {
           jumlah: number
           metode?: string
           no_referensi?: string | null
+          status_verifikasi?: string
           tagihan_id: string
           tanggal?: string
           updated_at?: string
         }
         Update: {
+          bukti_url?: string | null
           catatan?: string | null
           created_at?: string
           dicatat_oleh?: string | null
@@ -333,6 +382,7 @@ export type Database = {
           jumlah?: number
           metode?: string
           no_referensi?: string | null
+          status_verifikasi?: string
           tagihan_id?: string
           tanggal?: string
           updated_at?: string
@@ -464,6 +514,7 @@ export type Database = {
         Row: {
           alamat: string | null
           angkatan: string | null
+          catatan_akhlak: string | null
           created_at: string
           foto_url: string | null
           halaqah_id: string | null
@@ -481,6 +532,7 @@ export type Database = {
         Insert: {
           alamat?: string | null
           angkatan?: string | null
+          catatan_akhlak?: string | null
           created_at?: string
           foto_url?: string | null
           halaqah_id?: string | null
@@ -498,6 +550,7 @@ export type Database = {
         Update: {
           alamat?: string | null
           angkatan?: string | null
+          catatan_akhlak?: string | null
           created_at?: string
           foto_url?: string | null
           halaqah_id?: string | null
@@ -786,10 +839,22 @@ export type Database = {
         Args: { _santri_id: string; _user_id: string }
         Returns: boolean
       }
+      transparansi_publik: {
+        Args: never
+        Returns: {
+          jumlah_donasi: number
+          jumlah_donatur: number
+          program_aktif: Json
+          total_donasi: number
+          total_pemasukan_usaha: number
+          total_target_aktif: number
+        }[]
+      }
     }
     Enums: {
       app_role: "admin" | "ustadz" | "wali" | "santri"
       donasi_status: "menunggu" | "terverifikasi" | "ditolak"
+      jadwal_status: "terjadwal" | "selesai" | "dibatalkan"
       kehadiran_status: "hadir" | "izin" | "sakit" | "alpa" | "libur"
       pegawai_jabatan:
         | "pengasuh"
@@ -937,6 +1002,7 @@ export const Constants = {
     Enums: {
       app_role: ["admin", "ustadz", "wali", "santri"],
       donasi_status: ["menunggu", "terverifikasi", "ditolak"],
+      jadwal_status: ["terjadwal", "selesai", "dibatalkan"],
       kehadiran_status: ["hadir", "izin", "sakit", "alpa", "libur"],
       pegawai_jabatan: [
         "pengasuh",
